@@ -1,0 +1,78 @@
+body {
+    margin: 0;
+    height: 100vh;
+    background: #f0f0f0;
+    position: relative;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+/* Score */
+#score {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* High Score */
+#highScore {
+    position: fixed;
+    top: 40px;
+    left: 10px;
+    font-size: 18px;
+}
+
+/* Lives */
+#lives {
+    position: fixed;
+    top: 70px;
+    left: 10px;
+    font-size: 18px;
+}
+
+/* Start Button */
+#startBtn {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px 30px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Game Over */
+#gameOver {
+    display: none;
+    position: fixed;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    font-weight: bold;
+    color: red;
+}
+
+/* Circle */
+.circle {
+    width: 60px;
+    height: 60px;
+    background: red;
+    border-radius: 50%;
+    position: absolute;
+    cursor: pointer;
+}
+
+/* Jumpscare */
+#jumpscare {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: auto;
+    z-index: 9999;
+}
