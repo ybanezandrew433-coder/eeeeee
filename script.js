@@ -4,7 +4,7 @@ let score = 0;
 let lives = 3;
 let gameEnded = true;
 
-// Load high score
+// High score
 let highScore = localStorage.getItem("highScore");
 highScore = highScore ? Number(highScore) : 0;
 
@@ -14,25 +14,22 @@ const livesDisplay = document.getElementById("lives");
 const gameOverText = document.getElementById("gameOver");
 const startBtn = document.getElementById("startBtn");
 
-const jumpscare = document.getElementById("jumpscare");
+const jumpscareVideo = document.getElementById("jumpscareVideo");
 const jumpscareSound = document.getElementById("jumpscareSound");
+const flash = document.getElementById("flash");
+const bgMusic = document.getElementById("bgMusic");
 
-// Show saved high score
 highScoreDisplay.textContent = "High Score: " + highScore;
 
 function randomPosition(element) {
     const size = 60;
-    const maxX = window.innerWidth - size;
-    const maxY = window.innerHeight - size;
-
-    element.style.left = Math.random() * maxX + "px";
-    element.style.top = Math.random() * maxY + "px";
+    element.style.left = Math.random() * (window.innerWidth - size) + "px";
+    element.style.top = Math.random() * (window.innerHeight - size) + "px";
 }
 
 function updateScore() {
     score++;
     scoreDisplay.textContent = "Score: " + score;
-
     if (score > highScore) {
         highScore = score;
         localStorage.setItem("highScore", highScore);
@@ -44,21 +41,55 @@ function updateLives() {
     livesDisplay.textContent = "Lives: " + lives;
 }
 
-function showJumpscare() {
-    jumpscare.style.display = "block";
-    jumpscareSound.play();
+// Screen shake
+function screenShake(duration = 500, magnitude = 20) {
+    const start = Date.now();
+    function shake() {
+        if (Date.now() - start < duration) {
+            document.body.style.transform =
+                `translate(${(Math.random() - 0.5) * magnitude}px, ${(Math.random() - 0.5) * magnitude}px)`;
+            requestAnimationFrame(shake);
+        } else {
+            document.body.style.transform = "translate(0,0)";
+        }
+    }
+    shake();
+}
+
+// Lightning flicker
+function lightningFlicker(duration = 500) {
+    flash.style.display = "block";
+    let flicker = setInterval(() => {
+        flash.style.opacity = Math.random();
+    }, 50);
 
     setTimeout(() => {
-        jumpscare.style.display = "none";
-    }, 2000); // show for 2 seconds
+        clearInterval(flicker);
+        flash.style.display = "none";
+    }, duration);
+}
+
+// Game over jumpscare
+function showJumpscare() {
+    bgMusic.pause(); // stop background music
+
+    screenShake(1000, 25);
+    lightningFlicker(1000);
+
+    jumpscareVideo.style.display = "block";
+    jumpscareVideo.currentTime = 0;
+    jumpscareVideo.play();
+    jumpscareSound.play();
+
+    jumpscareVideo.onended = () => {
+        jumpscareVideo.style.display = "none";
+    };
 }
 
 function endGame() {
     gameEnded = true;
     gameOverText.style.display = "block";
     startBtn.style.display = "block";
-
-    // Show jumpscare when game ends
     showJumpscare();
 }
 
@@ -67,39 +98,27 @@ function createCircle() {
 
     const circle = document.createElement("div");
     circle.className = "circle";
-
     randomPosition(circle);
     document.body.appendChild(circle);
 
-    // Click = score
     circle.addEventListener("click", () => {
         clearTimeout(timer);
         circle.remove();
-
         updateScore();
-
-        if (speed > 300) {
-            speed -= 100;
-        }
-
+        if (speed > 300) speed -= 100;
         createCircle();
     });
 
-    // Missed circle = lose life
     timer = setTimeout(() => {
         circle.remove();
         lives--;
         updateLives();
-
-        if (lives <= 0) {
-            endGame();
-        } else {
-            createCircle();
-        }
+        if (lives <= 0) endGame();
+        else createCircle();
     }, speed);
 }
 
-// Start button logic
+// START BUTTON
 startBtn.addEventListener("click", () => {
     score = 0;
     lives = 3;
@@ -112,5 +131,13 @@ startBtn.addEventListener("click", () => {
     gameOverText.style.display = "none";
     startBtn.style.display = "none";
 
+    bgMusic.currentTime = 0;
+    bgMusic.play(); // start looping music
+
     createCircle();
 });
+
+
+
+
+
